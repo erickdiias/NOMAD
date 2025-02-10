@@ -31,5 +31,8 @@ architecture main of calc_rpm is
 
 begin
     
+    process(clk)
+    begin
+    end process;
 
 end architecture;
