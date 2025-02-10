@@ -30,12 +30,6 @@ architecture main of calc_rpm is
     signal contador : integer := 0;
 
 begin
-    process(clk, rst, estado)
-    begin
-        if rst = '1' then
-            contador <= 0;
-        elsif rising_edge(clk) then
-            case estado is
-    end process;
+    
 
 end architecture;
