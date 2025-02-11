@@ -11,6 +11,11 @@ set_property -dict {PACKAGE_PIN U2 IOSTANDARD LVCMOS33} [get_ports {sw[1]}]
 set_property -dict {PACKAGE_PIN U1 IOSTANDARD LVCMOS33} [get_ports {sw[2]}]
 set_property -dict {PACKAGE_PIN T2 IOSTANDARD LVCMOS33} [get_ports {sw[3]}]
 
+# On-board Sensor Efeito Hall
+set_property -dict {PACKAGE_PIN N4 IOSTANDARD LVCMOS33} [get_ports {sensor_hall[0]}]
+set_property -dict {PACKAGE_PIN N5 IOSTANDARD LVCMOS33} [get_ports {sensor_hall[1]}]
+set_property -dict {PACKAGE_PIN T3 IOSTANDARD LVCMOS33} [get_ports {sensor_hall[2]}]
+
 # On-board 7-Segment display 0
 set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS33} [get_ports {D0_a[0]}]
 set_property -dict {PACKAGE_PIN C4 IOSTANDARD LVCMOS33} [get_ports {D0_a[1]}]
