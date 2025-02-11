@@ -15,20 +15,22 @@ entity calc_rpm is
     port(
         clk : in std_logic;
         rst : in std_logic;
-        hall_a : in std_logic;
-        hall_b : in std_logic;
-        hall_c : in std_logic;
+        sensor_hall : in std_logic_vector(2 downto 0);
         mensurado : out std_logic_vector(13 downto 0)
     );
 end entity;
 
 architecture main of calc_rpm is
+
+    constant max_contagem       : integer := clk_freq / 2;  -- Timeout ajustado para resposta mais rápida
+
     signal estado_atual         : std_logic_vector(2 downto 0);
     signal ultimo_estado        : std_logic_vector(2 downto 0) := "000";
+    
     signal contagem             : integer := 0;
     signal contagem_transicao   : integer := 1;  -- Evita divisão por zero
     signal rpm                  : integer := 0;
-    constant max_contagem       : integer := clk_freq / 2;  -- Timeout ajustado para resposta mais rápida
+    
 begin
     
     process(clk, rst)
@@ -40,7 +42,7 @@ begin
             ultimo_estado <= (others => '0');
 
         elsif rising_edge(clk) then
-            estado_atual <= hall_a & hall_b & hall_c;
+            estado_atual <= sensor_hall;
 
             if ultimo_estado /= estado_atual then
                 if contagem > 0 then
