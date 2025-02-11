@@ -43,7 +43,7 @@ begin
             clk_freq => 100_000_000,
             pares_polos => 2
         )
-        port(
+        port map(
             clk => clk,
             rst => rst,
             sensor_hall => sensor_hall,
