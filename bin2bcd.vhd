@@ -4,22 +4,24 @@ use ieee.numeric_std.all;
 
 entity bin2bcd is
     port(
-        bin_14bits : in std_logic_vector(13 downto 0);
-        bcd_16bits : out std_logic_vector(15 downto 0)
+        bin_14bits_setpoint  : in  std_logic_vector(13 downto 0);
+        bin_14bits_mensurado : in  std_logic_vector(13 downto 0);
+        bcd_16bits_setpoint  : out std_logic_vector(15 downto 0);
+        bcd_16bits_mensurado : out std_logic_vector(15 downto 0)
     );
 end entity;
 
 architecture main of bin2bcd is
-begin
-    process(bin_14bits)
+
+    -- Processo para converter binário para BCD
+    function bin_to_bcd(bin_value : std_logic_vector(13 downto 0)) return std_logic_vector is
         variable bin_temp : unsigned(13 downto 0);
         variable bcd_temp : unsigned(15 downto 0) := (others => '0');
     begin
-        bin_temp := unsigned(bin_14bits);
-        bcd_temp := (others => '0');
+        bin_temp := unsigned(bin_value);
 
         for i in 0 to 13 loop
-            -- Ajusta os dígitos BCD antes do deslocamento
+            -- Ajuste de dígitos BCD antes do deslocamento
             if bcd_temp(15 downto 12) > 4 then
                 bcd_temp(15 downto 12) := bcd_temp(15 downto 12) + 3;
             end if;
@@ -33,11 +35,21 @@ begin
                 bcd_temp(3 downto 0) := bcd_temp(3 downto 0) + 3;
             end if;
 
-            -- Desloca os bits para a esquerda
+            -- Deslocamento de 16 bits para a esquerda
             bcd_temp := (bcd_temp(14 downto 0) & bin_temp(13));
             bin_temp := (bin_temp(12 downto 0) & '0');
         end loop;
 
-        bcd_16bits <= std_logic_vector(bcd_temp);
+        return std_logic_vector(bcd_temp);
+    end function;
+
+begin
+
+    process(bin_14bits_setpoint, bin_14bits_mensurado)
+    begin
+        -- Chama a função para converter os dois valores binários
+        bcd_16bits_setpoint  <= bin_to_bcd(bin_14bits_setpoint);
+        bcd_16bits_mensurado <= bin_to_bcd(bin_14bits_mensurado);
     end process;
+
 end architecture;
