@@ -35,9 +35,10 @@ begin
     begin
         if rst = '1' then
             contagem <= 0;
-            contagem_transicao <= 1;  -- Evita divisão por zero
+            contagem_transicao <= 1;  -- O valor 1 evita divisão por zero
             rpm <= 0;
             ultimo_estado <= (others => '0');
+
         elsif rising_edge(clk) then
             estado_atual <= hall_a & hall_b & hall_c;
 
@@ -47,7 +48,6 @@ begin
                 end if;
                 contagem <= 0;
 
-                -- Cálculo seguro de RPM evitando divisão por zero
                 if contagem_transicao > 0 then
                     rpm <= (clk_freq * 60) / (contagem_transicao * 6 * pares_polos);
                 end if;
