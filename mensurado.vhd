@@ -7,7 +7,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity calc_rpm is
+entity mensurado is
     generic(
         clk_freq : integer := 100_000_000;
         pares_polos : integer := 2
@@ -20,7 +20,7 @@ entity calc_rpm is
     );
 end entity;
 
-architecture main of calc_rpm is
+architecture main of mensurado is
 
     constant max_contagem       : integer := clk_freq / 2;  -- Timeout ajustado para resposta mais rápida
 
