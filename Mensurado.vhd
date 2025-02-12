@@ -45,13 +45,13 @@ begin
             estado_atual <= sensor_hall;
 
             if ultimo_estado /= estado_atual then
-                if contagem > 0 then
-                    contagem_transicao <= contagem;
-                end if;
+                contagem_transicao <= contagem;
                 contagem <= 0;
 
-                if contagem_transicao > 0 then
-                    rpm <= (clk_freq * 60) / (contagem_transicao * 6 * pares_polos);
+                if contagem_transicao > 1 then
+                    rpm <= (clk_freq / (6 * pares_polos)) * 60 / contagem_transicao;
+                else
+                    rpm <= 0;
                 end if;
             else
                 contagem <= contagem + 1;
