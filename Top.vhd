@@ -11,9 +11,12 @@ entity Top is
         clk, rst, button    : in  std_logic;
         sw                  : in  std_logic_vector(3 downto 0);
         sensor_hall         : in  std_logic_vector(2 downto 0);
+        led_s               : out std_logic_vector(3 downto 0);
         led_m               : out std_logic_vector(2 downto 0);
-        led_s, D0_a, D1_a   : out std_logic_vector(3 downto 0);
-        D0_seg, D1_seg      : out std_logic_vector(6 downto 0)
+        D0_a                : out std_logic_vector(3 downto 0);
+        D1_a                : out std_logic_vector(3 downto 0);
+        D0_seg              : out std_logic_vector(6 downto 0);
+        D1_seg              : out std_logic_vector(6 downto 0)
     );
 end entity;
 

@@ -22,13 +22,13 @@ end entity;
 
 architecture main of Mensurado is
 
-    constant max_contagem       : integer := clk_freq / 2;  -- Timeout ajustado para resposta mais rápida
+    constant max_contagem       : integer := clk_freq / 2;
 
     signal estado_atual         : std_logic_vector(2 downto 0);
     signal ultimo_estado        : std_logic_vector(2 downto 0) := "000";
     
     signal contagem             : integer := 0;
-    signal contagem_transicao   : integer := 1;  -- Evita divisão por zero
+    signal contagem_transicao   : integer := 1;  -- O valor 1 evita divisão por zero no inicio
     signal rpm                  : integer := 0;
     
 begin
@@ -57,7 +57,7 @@ begin
                 contagem <= contagem + 1;
             end if;
 
-            -- Se não houver transições por muito tempo, definir RPM como zero
+            -- Se não houver transições por muito tempo
             if contagem >= max_contagem then
                 rpm <= 0;
             end if;
@@ -66,7 +66,6 @@ begin
         end if;
     end process;
 
-    -- Proteção contra valores negativos
     mensurado <= std_logic_vector(to_unsigned(rpm, 14)) when rpm > 0 else (others => '0');
 
 end architecture;
