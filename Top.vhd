@@ -8,7 +8,9 @@ use ieee.std_logic_1164.all;
 
 entity Top is
     port(
-        clk, rst, button    : in  std_logic;
+        clk                 : in  std_logic;
+        rst                 : in  std_logic;
+        button              : in  std_logic;
         sw                  : in  std_logic_vector(3 downto 0);
         sensor_hall         : in  std_logic_vector(2 downto 0);
         led_s               : out std_logic_vector(3 downto 0);

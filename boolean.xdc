@@ -11,9 +11,9 @@ set_property -dict {PACKAGE_PIN G2 IOSTANDARD LVCMOS33} [get_ports {led_s[1]}]
 set_property -dict {PACKAGE_PIN F1 IOSTANDARD LVCMOS33} [get_ports {led_s[2]}]
 set_property -dict {PACKAGE_PIN F2 IOSTANDARD LVCMOS33} [get_ports {led_s[3]}]
 
-set_property -dict {PACKAGE_PIN A3 IOSTANDARD LVCMOS33} [get_ports {led_m[13]}]
-set_property -dict {PACKAGE_PIN B4 IOSTANDARD LVCMOS33} [get_ports {led_m[14]}]
-set_property -dict {PACKAGE_PIN A4 IOSTANDARD LVCMOS33} [get_ports {led_m[15]}]
+set_property -dict {PACKAGE_PIN A3 IOSTANDARD LVCMOS33} [get_ports {led_m[0]}]
+set_property -dict {PACKAGE_PIN B4 IOSTANDARD LVCMOS33} [get_ports {led_m[1]}]
+set_property -dict {PACKAGE_PIN A4 IOSTANDARD LVCMOS33} [get_ports {led_m[2]}]
 
 # On-board Slide Switches
 set_property -dict {PACKAGE_PIN V2 IOSTANDARD LVCMOS33} [get_ports {sw[0]}]
