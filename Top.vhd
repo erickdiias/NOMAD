@@ -8,19 +8,19 @@ use ieee.std_logic_1164.all;
 
 entity Top is
     port(
-        clk         : in std_logic;
-        rst         : in std_logic;
-        button      : in std_logic;
-        sw          : in std_logic_vector(3 downto 0);
-        sensor_hall : in std_logic_vector(2 downto 0);
-        D0_a        : out std_logic_vector(3 downto 0);
-        D1_a        : out std_logic_vector(3 downto 0);
-        D0_seg      : out std_logic_vector(6 downto 0);
-        D1_seg      : out std_logic_vector(6 downto 0)
+        clk, rst, button    : in  std_logic;
+        sw                  : in  std_logic_vector(3 downto 0);
+        sensor_hall         : in  std_logic_vector(2 downto 0);
+        led_m               : out std_logic_vector(2 downto 0);
+        led_s, D0_a, D1_a   : out std_logic_vector(3 downto 0);
+        D0_seg, D1_seg      : out std_logic_vector(6 downto 0)
     );
 end entity;
 
 architecture main of Top is
+
+    signal led_setpoint : std_logic_vector(3 downto 0) := (others => '0');
+    signal led_mensurado : std_logic_vector(2 downto 0) := (others => '0');
     
     signal setpoint : std_logic_vector(13 downto 0);
     signal mensurado : std_logic_vector(13 downto 0);
@@ -38,6 +38,9 @@ begin
             setpoint => setpoint
         );
 
+    led_setpoint <= sw;
+    led_s <= led_setpoint;
+
     mensurado_inst: entity work.Mensurado
         generic map(
             clk_freq => 100_000_000,
@@ -49,6 +52,9 @@ begin
             sensor_hall => sensor_hall,
             mensurado => mensurado
         );
+
+    led_mensurado <= sensor_hall;
+    led_m <= led_mensurado;
 
     bin2bcd_inst: entity work.bin2bcd
         port map(

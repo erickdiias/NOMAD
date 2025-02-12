@@ -49,7 +49,7 @@ begin
                 contagem <= 0;
 
                 if contagem_transicao > 1 then
-                    rpm <= (clk_freq / (6 * pares_polos)) * 60 / contagem_transicao;
+                    rpm <= ((clk_freq / (6 * pares_polos)) * (60 / contagem_transicao));
                 else
                     rpm <= 0;
                 end if;
