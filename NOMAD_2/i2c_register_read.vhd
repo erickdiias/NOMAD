@@ -11,11 +11,11 @@ entity i2c_register_read is
     generic(
         clk_as5600      : integer := 32; -- reduzir a taxa de transmissão para (100MHz/32MHz = 3,125MHz) sendo o Modo de alta velocidade: 3,4 MHz
         slave_addr      : std_logic_vector(6 downto 0) := "0110110"; -- "0x36" Endereço do dispositivo I2C (no caso, o AS5600)
-        register_addr   : std_logic_vector(7 downto 0) := "00001100" -- "0x0C"Endereço do registrador para ler os dados de ângulo
+        register_addr   : std_logic_vector(7 downto 0) := "00001100" -- "0x0C" Endereço do registrador para ler os dados de ângulo
     );
     port(
-        clk             : in std_logic;
-        rst             : in std_logic;
+        clk             : in std_logic; -- Clock de entrada da FPGA
+        rst             : in std_logic; -- Reset (ativo baixo)
         scl             : out std_logic; -- Linha de clock I2C
         sda             : inout std_logic; -- Linha de dados I2C (bidirecional)
         start           : in  std_logic; -- Inicia a comunicação quando em nível alto
