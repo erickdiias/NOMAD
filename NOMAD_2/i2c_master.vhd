@@ -5,12 +5,15 @@ USE ieee.std_logic_unsigned.all;
 ENTITY i2c_master IS
   GENERIC(
     input_clk : INTEGER := 50_000_000; -- velocidade do clock de entrada fornecido pela lógica do usuário em Hz
-    bus_clk   : INTEGER := 400_000);   -- velocidade do barramento I2C (SCL) em Hz
+    bus_clk   : INTEGER := 400_000;    -- velocidade do barramento I2C (SCL) em Hz
+    addr      : std_logic_vector(6 downto 0) := "0110110";
+    data_rd
+
+    );   
   PORT(
     clk       : IN     STD_LOGIC;                    -- clock do sistema
     reset_n   : IN     STD_LOGIC;                    -- reset ativo baixo
     ena       : IN     STD_LOGIC;                    -- trava o comando
-    addr      : IN     STD_LOGIC_VECTOR(6 DOWNTO 0); -- endereço do escravo alvo
     rw        : IN     STD_LOGIC;                    -- '0' para escrever, '1' para ler
     busy      : OUT    STD_LOGIC;                    -- indica que a transação está em progresso
     data_rd   : OUT    STD_LOGIC_VECTOR(7 DOWNTO 0); -- dados lidos do escravo
