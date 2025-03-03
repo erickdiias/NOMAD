@@ -16,16 +16,14 @@ entity PI_Controle is
     Port(
         clk         : in std_logic;
         rst         : in std_logic; 
-        setpoint    : in std_logic_vector(13 downto 0);
-        mensurado   : in std_logic_vector(13 downto 0);
+        erro        : in integer;
         pwm_duty    : out integer 
     );
 end entity;
 
 architecture main of PI_Controle is
-    constant PWM_MAX   : integer := PWM_MAX
+    constant PWM_MAX   : integer := 255;
 
-    signal erro             : integer := 0;
     signal erro_anterior    : integer := 0;
     signal integral         : integer := 0;
     signal derivada         : integer := 0;
@@ -46,7 +44,6 @@ begin
             output_PWM <= 0;
 
         elsif rising_edge(clk) then
-            erro <= to_integer(unsigned(setpoint) - unsigned(mensurado));
             integral <= integral + erro;
             derivada <= erro - erro_anterior;
             output_PID <= (erro * Kp) + (integral * Ki) + (derivada * Kd);

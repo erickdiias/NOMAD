@@ -28,8 +28,9 @@ architecture main of FPGA_top is
     signal bcd_16bits_setpoint : std_logic_vector(15 downto 0);
     signal bcd_16bits_mensurado : std_logic_vector(15 downto 0);
 
+    signal erro : integer := 0;
 begin
-
+    -- SETPOINT
     setpoint_inst: entity work.Setpoint
         port map(
             clk => clk,
@@ -42,6 +43,7 @@ begin
     led_setpoint <= sw;
     led_s <= led_setpoint;
 
+    -- MENSURADO
     mensurado_inst: entity work.Mensurado
         generic map(
             clk_freq => 100_000_000,
@@ -57,6 +59,10 @@ begin
     led_mensurado <= sensor_hall;
     led_m <= led_mensurado;
 
+    -- ERRO
+    erro <= to_integer(unsigned(setpoint) - unsigned(mensurado));
+
+    -- PI Controle
     pi_controle_int: entity work.PI_Controle
         generic map(
             Kp => 10,
@@ -66,11 +72,13 @@ begin
         port map(
             clk => clk,
             rst => rst,
-            setpoint => setpoint,
-            mensurado => mensurado,
+            erro => erro,
             pwm_duty => open
         );
 
+    -- Comutação
+
+    -- bin2bcd
     bin2bcd_inst: entity work.bin2bcd
         port map(
             bin_14bits_setpoint => setpoint,
