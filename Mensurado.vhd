@@ -10,7 +10,7 @@ use ieee.numeric_std.all;
 entity Mensurado is
     generic(
         clk_freq : integer := 100_000_000;
-        pares_polos : integer := 2
+        pares_polos : integer := 7
     );
     port(
         clk : in std_logic;
