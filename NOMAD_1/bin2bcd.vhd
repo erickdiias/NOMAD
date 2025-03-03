@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity bin2bcd is
+entity Bin2bcd is
     port(
         bin_14bits_setpoint  : in  std_logic_vector(13 downto 0);
         bin_14bits_mensurado : in  std_logic_vector(13 downto 0);
@@ -11,7 +11,7 @@ entity bin2bcd is
     );
 end entity;
 
-architecture main of bin2bcd is
+architecture main of Bin2bcd is
 
     -- Processo para converter binário para BCD
     function bin_to_bcd(bin_value : std_logic_vector(13 downto 0)) return std_logic_vector is
