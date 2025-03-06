@@ -5,6 +5,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity FPGA_top is
     port(
@@ -20,7 +21,7 @@ entity FPGA_top is
 
         pwmA_sup, pwmA_inf  : out std_logic;
         pwmB_sup, pwmB_inf : out std_logic;
-        pwmC_sup, pwmC_inf : out std_logic;
+        pwmC_sup, pwmC_inf : out std_logic
 
     );
 end entity;
