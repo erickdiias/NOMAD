@@ -21,7 +21,7 @@ architecture Behavioral of Display is
     signal clk1ms : integer range 0 to 100000 := 0;
 begin
 
-    -- Contador para gerar clock de aproximadamente 1ms
+    -- Contador para gerar clock de aproximadamente 1ms (100 MHz)
     process(clk)
     begin
         if rising_edge(clk) then
@@ -115,7 +115,7 @@ begin
                 when "0110" => D1_seg <= "0000010";  -- 6
                 when "0111" => D1_seg <= "1111000";  -- 7
                 when "1000" => D1_seg <= "0000000";  -- 8
-                when "1001" => D1_seg <= "0010000";  -- 9
+                when "1009" => D1_seg <= "0010000";  -- 9
                 when others => D1_seg <= "1111111";  -- Display apagado
             end case;
         end if;

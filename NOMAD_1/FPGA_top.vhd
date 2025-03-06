@@ -1,4 +1,4 @@
--- Controle trapezoidal de um motor brushless DC, indicacao de velocidade atual e pedida 
+-- Controle trapezoidal de um motor brushless DC com indicação de velocidade atual e pedida 
 -- 
 -- 
 -- 
@@ -11,10 +11,17 @@ entity FPGA_top is
         clk, rst, button    : in  std_logic;
         sw                  : in  std_logic_vector(3 downto 0);
         sensor_hall         : in  std_logic_vector(2 downto 0);
+
         led_s               : out std_logic_vector(3 downto 0);
         led_m               : out std_logic_vector(2 downto 0);
+
         D0_a, D1_a          : out std_logic_vector(3 downto 0);
-        D0_seg, D1_seg      : out std_logic_vector(6 downto 0)
+        D0_seg, D1_seg      : out std_logic_vector(6 downto 0);
+
+        pwmA_sup, pwmA_inf  : out std_logic;
+        pwmB_sup, pwmB_inf : out std_logic;
+        pwmC_sup, pwmC_inf : out std_logic;
+
     );
 end entity;
 
@@ -29,6 +36,8 @@ architecture main of FPGA_top is
     signal bcd_16bits_mensurado : std_logic_vector(15 downto 0);
 
     signal erro : integer := 0;
+
+    signal duty_cycle_int  : integer range 0 to 255; -- Duty cycle (0 a 255)
 begin
     -- SETPOINT
     setpoint_inst: entity work.Setpoint
@@ -63,7 +72,7 @@ begin
     erro <= to_integer(unsigned(setpoint) - unsigned(mensurado));
 
     -- PI Controle
-    pi_controle_int: entity work.PI_Controle
+    pi_controle_inst: entity work.PI_Controle
         generic map(
             Kp => 10,
             Ki => 1,
@@ -73,10 +82,23 @@ begin
             clk => clk,
             rst => rst,
             erro => erro,
-            pwm_duty => open
+            duty_cycle => duty_cycle_int
         );
 
-    -- Comutação
+    -- Controlador logico
+    controlador_logico_inst: entity work.Controlador_logico
+        port map(
+            clk => clk,
+            rst => rst,
+            sensor_hall => sensor_hall,
+            duty_cycle => duty_cycle_int,
+            pwmA_sup => pwmA_sup,
+            pwmA_inf => pwmA_inf,
+            pwmB_sup => pwmB_sup,
+            pwmB_inf => pwmB_inf,
+            pwmC_sup => pwmC_sup,
+            pwmC_inf => pwmC_inf
+        );
 
     -- bin2bcd
     bin2bcd_inst: entity work.bin2bcd

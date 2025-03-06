@@ -51,3 +51,11 @@ set_property -dict {PACKAGE_PIN C2 IOSTANDARD LVCMOS33} [get_ports {D1_seg[3]}]
 set_property -dict {PACKAGE_PIN B1 IOSTANDARD LVCMOS33} [get_ports {D1_seg[4]}]
 set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVCMOS33} [get_ports {D1_seg[5]}]
 set_property -dict {PACKAGE_PIN D1 IOSTANDARD LVCMOS33} [get_ports {D1_seg[6]}]
+
+# PWM Outputs
+set_property -dict {PACKAGE_PIN T4 IOSTANDARD LVCMOS33} [get_ports pwmA_sup]
+set_property -dict {PACKAGE_PIN P5 IOSTANDARD LVCMOS33} [get_ports pwmA_inf]
+set_property -dict {PACKAGE_PIN R5 IOSTANDARD LVCMOS33} [get_ports pwmB_sup]
+set_property -dict {PACKAGE_PIN P6 IOSTANDARD LVCMOS33} [get_ports pwmB_inf]
+set_property -dict {PACKAGE_PIN T5 IOSTANDARD LVCMOS33} [get_ports pwmC_sup]
+set_property -dict {PACKAGE_PIN R6 IOSTANDARD LVCMOS33} [get_ports pwmC_inf]

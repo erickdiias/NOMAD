@@ -28,7 +28,7 @@ architecture main of Mensurado is
     signal ultimo_estado        : std_logic_vector(2 downto 0) := "000";
     
     signal contagem             : integer := 0;
-    signal contagem_transicao   : integer := 1;  -- O valor 1 evita divisão por zero no inicio
+    signal contagem_transicao   : integer := 1;  -- O valor 1 evita divisão por zero no início
     signal rpm                  : integer := 0;
     
 begin
