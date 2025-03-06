@@ -12,35 +12,38 @@ entity FPGA_top is
         clk, rst, button    : in  std_logic;
         sw                  : in  std_logic_vector(3 downto 0);
         sensor_hall         : in  std_logic_vector(2 downto 0);
-
+        
+        -- saidas dos leds de indicacao do setpoint e mensurado
         led_s               : out std_logic_vector(3 downto 0);
         led_m               : out std_logic_vector(2 downto 0);
 
+        -- saidas do display e anodo
         D0_a, D1_a          : out std_logic_vector(3 downto 0);
         D0_seg, D1_seg      : out std_logic_vector(6 downto 0);
-
+        
+        -- Saidas do controlador logico
         pwmA_sup, pwmA_inf  : out std_logic;
-        pwmB_sup, pwmB_inf : out std_logic;
-        pwmC_sup, pwmC_inf : out std_logic
+        pwmB_sup, pwmB_inf  : out std_logic;
+        pwmC_sup, pwmC_inf  : out std_logic
 
     );
 end entity;
 
 architecture main of FPGA_top is
 
-    signal led_setpoint : std_logic_vector(3 downto 0) := (others => '0');
-    signal led_mensurado : std_logic_vector(2 downto 0) := (others => '0');
+    signal led_setpoint     : std_logic_vector(3 downto 0) := (others => '0');
+    signal led_mensurado    : std_logic_vector(2 downto 0) := (others => '0');
     
-    signal setpoint : std_logic_vector(13 downto 0);
-    signal mensurado : std_logic_vector(13 downto 0);
-    signal bcd_16bits_setpoint : std_logic_vector(15 downto 0);
+    signal setpoint         : std_logic_vector(13 downto 0);
+    signal mensurado        : std_logic_vector(13 downto 0);
+    signal bcd_16bits_setpoint  : std_logic_vector(15 downto 0);
     signal bcd_16bits_mensurado : std_logic_vector(15 downto 0);
 
-    signal erro : integer := 0;
+    signal erro             : integer := 0;
 
-    signal duty_cycle_int  : integer range 0 to 255; -- Duty cycle (0 a 255)
+    signal duty_cycle_int   : integer range 0 to 255; -- Duty cycle (0 a 255)
 begin
-    -- SETPOINT
+    -- SETPOINT --------------------------------------------------------------
     setpoint_inst: entity work.Setpoint
         port map(
             clk => clk,
@@ -53,7 +56,7 @@ begin
     led_setpoint <= sw;
     led_s <= led_setpoint;
 
-    -- MENSURADO
+    -- MENSURADO -------------------------------------------------------------
     mensurado_inst: entity work.Mensurado
         generic map(
             clk_freq => 100_000_000,
@@ -69,10 +72,10 @@ begin
     led_mensurado <= sensor_hall;
     led_m <= led_mensurado;
 
-    -- ERRO
+    -- ERRO ------------------------------------------------------------------
     erro <= to_integer(unsigned(setpoint) - unsigned(mensurado));
 
-    -- PI Controle
+    -- PI Controle -----------------------------------------------------------
     pi_controle_inst: entity work.PI_Controle
         generic map(
             Kp => 10,
@@ -86,7 +89,7 @@ begin
             duty_cycle => duty_cycle_int
         );
 
-    -- Controlador logico
+    -- Controlador logico ----------------------------------------------------
     controlador_logico_inst: entity work.Controlador_logico
         port map(
             clk => clk,
@@ -101,7 +104,7 @@ begin
             pwmC_inf => pwmC_inf
         );
 
-    -- bin2bcd
+    -- bin2bcd ---------------------------------------------------------------
     bin2bcd_inst: entity work.bin2bcd
         port map(
             bin_14bits_setpoint => setpoint,
@@ -110,6 +113,7 @@ begin
             bcd_16bits_mensurado => bcd_16bits_mensurado
         );
 
+    -- Display ---------------------------------------------------------------
     display_inst: entity work.Display
         port map(
             clk => clk,
