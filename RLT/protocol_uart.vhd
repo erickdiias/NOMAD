@@ -1,6 +1,6 @@
 -- =====================================================
 -- Sistema UART para comunicação FPGA-Arduino
--- Protocolo: SP (Setpoint) -> PV (Process Value)
+-- Implementa receptor e transmissor UART a 9600 baud
 -- =====================================================
 
 library ieee;
@@ -8,19 +8,19 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 -- Entidade principal do sistema
-entity uart is
+entity protocol_uart is
     Port ( 
-        clk     : in  STD_LOGIC;  -- Clock da FPGA (50MHz assumido)
+        clk     : in  STD_LOGIC;  -- Clock da FPGA
         reset   : in  STD_LOGIC;  -- Reset ativo alto
-        uart_rx : in  STD_LOGIC;  -- Linha RX do UART
-        uart_tx : out STD_LOGIC;  -- Linha TX do UART
-        -- Sinais de debug (opcional)
+        uart_rx : in  STD_LOGIC;  -- Linha RX
+        uart_tx : out STD_LOGIC;  -- Linha TX
+
         led_rx  : out STD_LOGIC;  -- LED indica recepção
         led_tx  : out STD_LOGIC   -- LED indica transmissão
     );
-end uart;
+end protocol_uart;
 
-architecture Behavioral of uart is
+architecture Behavioral of protocol_uart is
 
     -- Parâmetros UART para 9600 baud @ 50MHz
     constant BAUD_RATE    : integer := 9600;
@@ -28,12 +28,12 @@ architecture Behavioral of uart is
     constant BAUD_DIVISOR : integer := CLK_FREQ / BAUD_RATE;
     
     -- Sinais internos
-    signal baud_tick      : std_logic;
+    signal baud_tick      : std_logic := '0';
     signal baud_counter   : integer range 0 to BAUD_DIVISOR-1;
     
     -- Sinais do receptor UART
     signal rx_data        : std_logic_vector(7 downto 0);
-    signal rx_data_valid  : std_logic;
+    signal rx_start       : std_logic;
     signal rx_busy        : std_logic;
     
     -- Sinais do transmissor UART
@@ -51,9 +51,6 @@ architecture Behavioral of uart is
     type state_type is (IDLE, RECEIVING_SP, PROCESSING, SENDING_PV);
     signal current_state  : state_type := IDLE;
     
-    -- Contador para simulação de velocidade em tempo real
-    signal velocity_sim_counter : unsigned(23 downto 0) := (others => '0');
-    signal velocity_update : std_logic;
 
 begin
 
@@ -86,7 +83,7 @@ begin
             baud_tick => baud_tick,
             rx_line => uart_rx,
             data_out => rx_data,
-            data_valid => rx_data_valid,
+            data_valid => rx_start      ,
             busy => rx_busy
         );
 
@@ -103,37 +100,6 @@ begin
             tx_line => uart_tx,
             busy => tx_busy
         );
-
-    -- =====================================================
-    -- Simulador de velocidade em tempo real
-    -- =====================================================
-    velocity_simulator: process(clk, reset)
-        variable noise : unsigned(7 downto 0) := x"05";
-    begin
-        if reset = '1' then
-            velocity_sim_counter <= (others => '0');
-            velocity_update <= '0';
-            process_value <= (others => '0');
-        elsif rising_edge(clk) then
-            velocity_sim_counter <= velocity_sim_counter + 1;
-            
-            -- Atualiza velocidade a cada ~0.1s (5M ciclos @ 50MHz)
-            if velocity_sim_counter = x"4C4B40" then
-                velocity_sim_counter <= (others => '0');
-                velocity_update <= '1';
-                
-                -- Simula PV como SP +/- ruído pequeno (comportamento realista)
-                noise := noise + 3; -- Simula ruído
-                if setpoint > noise(3 downto 0) then
-                    process_value <= setpoint - noise(3 downto 0);
-                else
-                    process_value <= setpoint + noise(3 downto 0);
-                end if;
-            else
-                velocity_update <= '0';
-            end if;
-        end if;
-    end process;
 
     -- =====================================================
     -- Máquina de Estados Principal
@@ -156,7 +122,7 @@ begin
                     led_tx <= '0';
                     tx_start <= '0';
                     
-                    if rx_data_valid = '1' then
+                    if rx_start      = '1' then
                         -- Protocolo: recebe comando primeiro
                         if rx_data = x"53" then -- 'S' para Setpoint
                             current_state <= RECEIVING_SP;
@@ -166,7 +132,7 @@ begin
                     end if;
                 
                 when RECEIVING_SP =>
-                    if rx_data_valid = '1' then
+                    if rx_start      = '1' then
                         case byte_counter is
                             when 0 => 
                                 sp_buffer(15 downto 8) <= rx_data;
