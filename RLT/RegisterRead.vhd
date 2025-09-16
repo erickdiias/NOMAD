@@ -35,7 +35,7 @@ architecture rtl of RegisterRead is
     constant hall_state : hall_state_array := ("001", "011", "010", "110", "100", "101");
     
     -- Sinais internos
-    signal hall_anterior, hall_atual : std_logic_vector(num_hall-1 downto 0) := (others => '0'); -- Estado anterior dos sensores Hall // Estado atual dos sensores Hall
+    signal hall_anterior : std_logic_vector(num_hall-1 downto 0) := (others => '0'); -- Estado anterior dos sensores Hall
     signal cont_trans, cont_tempo  : unsigned(31 downto 0) := (others => '0'); -- Contador de transições // Contador de tempo
 
     signal hall_sync1, hall_sync2 : std_logic_vector(num_hall-1 downto 0) := (others => '0'); -- Sinais sincronizados dos sensores Hall (2 FFs)
@@ -48,8 +48,8 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            hall_sync1 <= sensor_hall;  -- 1º estágio
-            hall_sync2 <= hall_sync1;   -- 2º estágio (usado no resto do código)
+            hall_sync1 <= sensor_hall;  -- 1º FF
+            hall_sync2 <= hall_sync1;   -- 2º FF
         end if;
     end process;
 
@@ -59,6 +59,7 @@ begin
     process(clk)
         variable rpm_calc : integer;
         variable hall_valido : boolean;
+        variable hall_atual : std_logic_vector(num_hall-1 downto 0); -- Estado atual dos sensores Hall
     begin
         if rising_edge(clk) then
             hall_valido := false; -- Reset varialvel a cada ciclo
@@ -70,15 +71,12 @@ begin
                 for i in hall_state'range loop
                     if hall_atual = hall_state(i) then
                         hall_valido := true;
+                        cont_trans <= cont_trans + 1; -- Se a combinação for válida, incrementa o contador de transições
+                        hall_anterior <= hall_atual; -- Atualiza o estado anterior
                     end if;
                 end loop;
-                -- Se a combinação for válida, incrementa o contador de transições           
-                if hall_valido then
-                    cont_trans <= cont_trans + 1;
-                end if;
             end if;
-            -- Atualiza o estado anterior
-            hall_anterior <= hall_atual;
+            
                     
             -- Controle de janela de tempo
             if cont_tempo < to_unsigned(janela_ciclos-1, cont_tempo'length) then
@@ -89,7 +87,10 @@ begin
                 -- Calcula RPM:
                 -- RPM = (Número de transições / Número de transições por volta) * (60 segundos / janela de tempo em segundos)
                 if cont_trans > 0 then
-                    rpm_calc := (to_integer(cont_trans) * (60 * 1000)) / (num_trans_mec * time_window); -- 60 s/min, janela em ms). Isso está ok.
+                    rpm_calc := (to_integer(cont_trans) * (60 * 1000)) / (num_trans_mec * time_window); -- 60 s/min, janela em ms)
+                    if rpm_calc > 65535 then
+                        rpm_calc := 65535; -- Limita o valor máximo para caber em 16 bits
+                    end if;
                 else
                     rpm_calc := 0;
                 end if;
